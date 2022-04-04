@@ -3,13 +3,12 @@ import React, { useState } from "react";
 import Axios from "axios";
 import {
   Card,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  TextField,
-  Typography
+  TextField
 } from '@mui/material';
+
+import ProductSearchList from './components/ProductSearchList.js';
+import ProductNotFound from './components/ProductNotFound';
+import { SearchQuery } from './constant/ApplicationConstants';
 
 function App() {
 
@@ -18,7 +17,7 @@ function App() {
 
   const fetchProducts = async (query) => {
     setSearchQuery(query);
-    if (query != undefined && query.length >= 3) {
+    if (query != undefined && query.length >= SearchQuery.SEARCH_QUERY_LENGTH) {
       const { data } = await Axios.get(
         "http://localhost:8080/api/v1/productservice/searchProductDetails?query=" + query
       );
@@ -56,40 +55,13 @@ function App() {
               margin: "12px",
               boxShadow: "none"
             }}>
-              <List>
-                {
-                  products.map((product, index) => {
-                    return (
-                      <ListItem disablePadding>
-                        <ListItemButton>
-                          <ListItemText
-                            primary={product.productName}
-                            secondary={
-                              <React.Fragment>
-                                <Typography
-                                  sx={{ display: 'inline' }}
-                                  component="span"
-                                  variant="body2"
-                                  color="text.primary"
-                                  style={{ marginRight: 12 }}>
-                                  INR {product.productPrice}
-                                </Typography>
-                                {product.productDescription}
-                              </React.Fragment>
-                            }
-                          />
-                        </ListItemButton>
-                      </ListItem>
-                    );
-                  })
-                }
-              </List>
+              <ProductSearchList products={{ products }} />
             </Card>
           </div>
           :
-          searchQuery.length > 0
+          searchQuery.length >= SearchQuery.SEARCH_QUERY_LENGTH
             ?
-            <p>Product Not Found</p>
+            <ProductNotFound />
             :
             null
       }
